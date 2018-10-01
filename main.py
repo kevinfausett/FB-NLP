@@ -15,6 +15,7 @@ def parseJsonToNGram(data, n):
                         if n > 1:
                             key = tuple([content[i - k] for k in range(n, 0, -1)])
                         else:
+                            # Instead of a tuple of strings, casting a single tuple to string would yield a char tuple
                             key = content[i-1]
                         if key in transitionTables[person]:
                             transitionTables[person][key].append(content[i])
@@ -33,6 +34,7 @@ def generateChain(transitionTables, data, n):
         start = choice(list(transitionTables[person].keys()))
         words = [start[i] for i in range(0, n)]
         words.append(choice(transitionTables[person][start]))
+        # For speed, build a list of strings and ' '.join them
         res = []
         res.extend(words)
         t = 0
@@ -47,7 +49,7 @@ def generateChain(transitionTables, data, n):
                     words[i] = words[i+1]
                 words[-1] = choice(transitionTables[person][key])
                 res.append(words[-1])
-
+            # If key not found, forget our context and start talking about something else.
             else:
                 key = choice(list(transitionTables[person].keys()))
                 if n > 1:
