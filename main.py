@@ -32,8 +32,8 @@ def generateChain(transitionTables, data):
         word1 = start[0]
         word2 = start[1]
         word3 = choice(transitionTables[person][start])
-        res = ""
-        res += (word1 + " " + word2 + " " + word3 + " ")
+        res = []
+        res.extend((word1, word2, word3))
         i = 0
         for i in range(0, 100):
             key = word2, word3
@@ -41,17 +41,18 @@ def generateChain(transitionTables, data):
                 word1 = word2
                 word2 = word3
                 word3 = choice(transitionTables[person][word1, word2])
-                res += (word3 + " ")
+                res.append(word3)
             else:
                 key = choice(list(transitionTables[person].keys()))
                 word1 = key[0]
                 word2 = key[1]
                 word3 = choice(transitionTables[person][key])
-                res += (word1 + " " + word2 + " " + word3 + " ")
+                res.extend((word1, word2, word3))
             i += 1
+        resStr = ' '.join(res)
         filename = participant['name'] + ".txt"
-        pathlib.Path(filename).write_text(res, encoding="utf8")
-        print(res)
+        pathlib.Path(filename).write_text(resStr, encoding="utf8")
+        print(resStr)
 
 def main():
     with open('message.json') as messageJSON:
