@@ -4,26 +4,26 @@ import pathlib
 
 def parseJsonToNGram(data, n):
     transitionTables = {}
+    currentParticipants = []
     for participant in data['participants']:
         person = participant['name']
+        currentParticipants.append(person)
         transitionTables[person] = {}
-        for message in data['messages']:
-            if message['sender_name'] == person:
-                if 'content' in message and len(message['content']) > n:
-                    content = message['content'].split(" ")
-                    for i in range(n, len(content)):
-                        if n > 1:
-                            key = tuple([content[i - k] for k in range(n, 0, -1)])
-                        else:
-                            # Instead of a tuple of strings, casting a single tuple to string would yield a char tuple
-                            key = content[i-1]
-                        if key in transitionTables[person]:
-                            transitionTables[person][key].append(content[i])
-                        else:
-                            transitionTables[person][key] = [content[i]]
-                # Avoid future participants checking if they sent a message we already know another sent
-                data['messages'].remove(message)
-        print(person + ' added!')
+    for message in data['messages']:
+        person = message['sender_name']
+        # Ignore message senders who aren't current participants
+        if person in currentParticipants and 'content' in message and len(message['content']) > n:
+            content = message['content'].split(" ")
+            for i in range(n, len(content)):
+                if n > 1:
+                    key = tuple([content[i - k] for k in range(n, 0, -1)])
+                else:
+                    # Instead of a tuple of strings, casting a single tuple to string would yield a char tuple
+                    key = content[i-1]
+                if key in transitionTables[person]:
+                    transitionTables[person][key].append(content[i])
+                else:
+                    transitionTables[person][key] = [content[i]]
     return transitionTables
 
 
@@ -67,8 +67,8 @@ def generateChain(transitionTables, data, n):
 def main():
     with open('message.json') as messageJSON:
         data = json.loads(messageJSON.read())
-    tt = parseJsonToNGram(data, 3)
-    generateChain(tt, data, 3)
+    tt = parseJsonToNGram(data, 2)
+    generateChain(tt, data, 2)
 
 
 main()
