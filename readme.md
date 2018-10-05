@@ -46,7 +46,7 @@ words you've said compared to "one" occurrence out of 5,000 words someone else h
 who has spoken less as more likely to say it. Thus, we will output weighted (including prior probability) and
 unweighted results. Ideally, sending more messages means sending more words, and thus the higher count of words
 in that class resulting in a lower probability for a given word will balance out the higher probability to be 
-accurate but people have different tendencies in how they break up messages (breaking a paragraph into multiple vs
+accurate. However, people have different tendencies in how they break up messages (breaking a paragraph into multiple vs
 one for example) so someone who sends a higher than average number of messages but fewer than average words would 
 likely be seen as the most likely speaker for any brand new words.
 
