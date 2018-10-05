@@ -14,6 +14,7 @@ def setupTable(data):
             currentParticipants.append(person)
             table[person] = {}
             counts['word'][person], counts['message'][person] = 0, 0
+
         for message in data['messages']:
             person = message['sender_name']
             if person in currentParticipants and 'content' in message:
@@ -27,16 +28,19 @@ def setupTable(data):
                     else:
                         table[person][word] = 1
                         table['vocabularylen'] += 1
+
         return table, counts, currentParticipants
 
 
 def naiveBayes(table, counts, currentParticipants, text):
     words = text.split(" ")
     scores = {}
+    wtScores, unwtScores = {}, {}
+
     for person in currentParticipants:
         scores[person] = []
+
     for word in words:
-        temp = {}
         # laplace smoothing
         v = table['vocabularylen']
         for person in currentParticipants:
@@ -44,10 +48,8 @@ def naiveBayes(table, counts, currentParticipants, text):
                 occurrences = table[person][word] + 1
             else:
                 occurrences = 1
-
             scores[person].append(occurrences / (counts['word'][person] + v))
 
-    wtScores, unwtScores = {}, {}
     for person in currentParticipants:
         prior = counts['message'][person] / table['totalmessages']
         totalUnwtProb = reduce((lambda x, y: x * y), scores[person])
@@ -56,11 +58,11 @@ def naiveBayes(table, counts, currentParticipants, text):
         unwtScores[person] = totalUnwtProb
         wtScores[person] = totalWtProb
 
-
     print("Max unweighted:")
     print(max(unwtScores.items(), key=lambda item: item[1]))
     print("Max weighted:")
     print(max(wtScores.items(), key=lambda item: item[1]))
+
 
 def main():
     with open('message.json') as messageJSON:
